@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- UTILISATEUR ----------
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String
+  pseudo      String   @unique
+  createdAt   DateTime @default(now())
+
+  // sorties que j'ai créées
+  eventsCreated     Event[]        @relation("EventOrganizer")
+  // sorties auxquelles je suis invité(e)
+  invitations       Invitation[]
+  // mes amitiés (des deux côtés)
+  friendshipsSent    Friendship[]  @relation("FriendshipRequester")
+  friendshipsRecu    Friendship[]  @relation("FriendshipAddressee")
+  // groupes dont je suis membre
+  groupMemberships  GroupMember[]
+  // messages que j'ai envoyés
+  messages          Message[]
+  // annonces que j'ai postées (si organisateur)
+  announcements     Announcement[]
+}
+
+// ---------- AMITIÉ ----------
+// une ligne = une relation entre deux users, avec un statut
+model Friendship {
+  id           String   @id @default(uuid())
+  status       FriendStatus @default(PENDING)
+  createdAt    DateTime @default(now())
+
+  requester    User     @relation("FriendshipRequester", fields: [requesterId], references: [id])
+  requesterId  String
+  addressee    User     @relation("FriendshipAddressee", fields: [addresseeId], references: [id])
+  addresseeId  String
+
+  @@unique([requesterId, addresseeId]) // évite les doublons de demande
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+// ---------- SORTIE (événement) ----------
+model Event {
+  id           String    @id @default(uuid())
+  title        String
+  description  String?
+  date         DateTime
+  duration     String?   // ex: "3h" — texte libre pour rester simple au départ
+  locationName String?
+  latitude     Float?
+  longitude    Float?
+  visibility   Visibility @default(PRIVATE)
+  createdAt    DateTime  @default(now())
+
+  organizer    User      @relation("EventOrganizer", fields: [organizerId], references: [id])
+  organizerId  String
+
+  invitations    Invitation[]
+  announcements  Announcement[]
+  group          Group?    // groupe de discussion temporaire lié à cette sortie
+}
+
+enum Visibility {
+  PRIVATE
+  PUBLIC
+}
+
+// ---------- INVITATION / PARTICIPATION ----------
+// relie un User à un Event, avec son statut de réponse
+model Invitation {
+  id        String   @id @default(uuid())
+  status    InviteStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+
+  @@unique([userId, eventId]) // un user ne peut être invité qu'une fois à la même sortie
+}
+
+enum InviteStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+}
+
+// ---------- ANNONCE (sur une sortie) ----------
+model Announcement {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+}
+
+// ---------- GROUPE (permanent ou temporaire) ----------
+model Group {
+  id          String   @id @default(uuid())
+  name        String
+  isTemporary Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  // si le groupe est lié à une sortie (temporaire), sinon null
+  event       Event?   @relation(fields: [eventId], references: [id])
+  eventId     String?  @unique
+
+  members     GroupMember[]
+  messages    Message[]
+}
+
+model GroupMember {
+  id       String   @id @default(uuid())
+  role     GroupRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  group    Group    @relation(fields: [groupId], references: [id])
+  groupId  String
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+
+  @@unique([groupId, userId])
+}
+
+enum GroupRole {
+  ADMIN
+  MEMBER
+}
+
+// ---------- MESSAGE ----------
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  group     Group    @relation(fields: [groupId], references: [id])
+  groupId   String
+  sender    User     @relation(fields: [senderId], references: [id])
+  senderId  String
+}
