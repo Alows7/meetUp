@@ -44,9 +44,10 @@ export const createUser = async (req, res) => {
       data: {
         email,
         password,
-        pseudo
+        pseudo,
       },
     });
+    if (!pseudo) res.status(400).json({ message: "A name is required" });
     res.status(201).json(user);
     console.log("User created successfully !");
   } catch (error) {
@@ -57,6 +58,7 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { email, password, pseudo } = req.body;
+    if (!pseudo) res.status(400).json({ message: "A name is required" });
     await prisma.user.update({
       where: {
         id: req.params.id,
@@ -64,7 +66,7 @@ export const updateUser = async (req, res) => {
       data: {
         email: email,
         password: password,
-        pseudo: pseudo
+        pseudo: pseudo,
       },
     });
     res.status(200).json({ message: "User updated successfully !" });
