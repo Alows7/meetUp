@@ -2,7 +2,9 @@ import prisma from "../config/prisma.js";
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+      select: { id: true, email: true, pseudo: true },
+    });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
@@ -18,6 +20,7 @@ export const getUser = async (req, res) => {
       where: {
         id: req.params.id,
       },
+      select: { id: true, email: true, pseudo: true },
     });
     if (!user) return res.status(404).json({ message: "user not found" });
     res.status(200).json(user);
@@ -36,6 +39,7 @@ export const createUser = async (req, res) => {
         password,
         pseudo,
       },
+      select: { id: true, email: true, pseudo: true },
     });
     if (!pseudo) res.status(400).json({ message: "A name is required" });
     res.status(201).json(user);
@@ -55,10 +59,11 @@ export const updateUser = async (req, res) => {
         id: req.params.id,
       },
       data: {
-        email: email,
-        password: password,
-        pseudo: pseudo,
+        email,
+        password,
+        pseudo,
       },
+      select: { id: true, email: true, pseudo: true },
     });
     res.status(200).json(user);
   } catch (error) {
