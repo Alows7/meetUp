@@ -3,6 +3,8 @@ import prisma from "../config/prisma.js";
 export async function updateGroupMember(req, res) {
   try {
     const { groupId, userId } = req.body;
+    if (!groupId || userId)
+      return res.status(400).json({ message: "Group and user are required" });
     const gm = await prisma.groupMember.update({
       where: {
         id: req.params.id,
@@ -36,6 +38,8 @@ export async function deleteGroupMember(req, res) {
 export async function createGroupMember(req, res) {
   try {
     const { groupId, userId } = req.body;
+    if (!groupId || userId)
+      return res.status(400).json({ message: "Group and user are required" });
     const gm = await prisma.groupMember.create({
       data: {
         groupId,
@@ -56,6 +60,7 @@ export async function getGroupMember(req, res) {
         id: req.params.id,
       },
     });
+    if (!gm) return res.status(404).json({ message: "GroupMember not found" });
     res.status(200).json(gm);
   } catch (error) {
     res.status(500).json({ message: "Internal error" });

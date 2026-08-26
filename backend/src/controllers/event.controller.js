@@ -3,13 +3,13 @@ import prisma from "../config/prisma.js";
 export async function getEvents(req, res) {
   try {
     const events = await prisma.event.findMany();
-    if (!events) res.json({ message: "No events found" });
-    res.status(200).json({ events });
+    res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: "Internal server Error" });
     console.log("Error at getEvents controller ", error);
   }
 }
+
 export async function getEvent(req, res) {
   try {
     const event = await prisma.event.findUnique({
@@ -17,13 +17,15 @@ export async function getEvent(req, res) {
         id: req.params.id,
       },
     });
-    if (!event) res.json({ message: "No event found" });
-    res.status(200).json({ event });
+    if (!event) return res.status(404).json({ message: "event not found" });
+    res.status(200).json( event );
   } catch (error) {
     res.status(500).json({ message: "Internal server Error" });
     console.log("Error at getEvent controller ", error);
   }
 }
+
+
 export async function createEvent(req, res) {
   try {
     const {
@@ -56,6 +58,8 @@ export async function createEvent(req, res) {
     console.log("Error at createEvent controller ", error);
   }
 }
+
+
 export async function deleteEvent(req, res) {
   try {
     await prisma.event.delete({
@@ -101,5 +105,24 @@ export async function updateEvent(req, res) {
   } catch (error) {
     res.status(500).json({ message: "Internal server Error" });
     console.log("Error at updateEvent controller ", error);
+  }
+}
+
+export async function getAnnouncementsByEvent(req, res) {
+  try {
+    const { eventId } = req.params;
+    const announcements = await prisma.announcement.findMany({
+      where: { eventId },
+      include: {
+        select: { id: true, title: true, description: true },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+    res.status(200).json(announcements);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at getAnnouncementsByEvent controller : \n", error);
   }
 }

@@ -3,13 +3,9 @@ import prisma from "../config/prisma.js";
 export async function createMessage(req, res) {
   try {
     const { content, groupId, senderId } = req.body;
-    if (!groupId)
-      res.status(400).json({
-        message: "groupId is required",
-      });
-    if (!content)
-      res.status(400).json({
-        message: "content is required",
+    if (!groupId || !content)
+      return res.status(400).json({
+        message: "groupId and content are required",
       });
 
     const message = await prisma.message.create({
@@ -33,6 +29,7 @@ export async function getMessage(req, res) {
         id: req.params.id,
       },
     });
+    if (!message) return res.status(404).json({ message: "Message not found" });
     res.status(200).json(message);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -53,7 +50,10 @@ export async function getMessages(req, res) {
 export async function updateMessage(req, res) {
   try {
     const { content, groupId, senderId } = req.body;
-    if (!content) res.status(400).json({ message: "Content is required" });
+    if (!groupId || !content)
+      return res.status(400).json({
+        message: "groupId and content are required",
+      });
     const updatedMessage = await prisma.message.update({
       where: {
         id: req.params.id,

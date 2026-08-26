@@ -3,11 +3,10 @@ import prisma from "../config/prisma.js";
 export const getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
-    if (!users) res.json({ message: "no users not found" });
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({
-      message: "nternal server error",
+      message: "Internal server error",
     });
     console.log("Error at getUsers controller", error);
   }
@@ -20,23 +19,14 @@ export const getUser = async (req, res) => {
         id: req.params.id,
       },
     });
-    if (!user) res.json({ message: "user not found" });
+    if (!user) return res.status(404).json({ message: "user not found" });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
     console.log("Error at getUser controller", error);
   }
 };
-// export const getAllUser = async (req, res)=>{
-//  try {
-//    const users = await User.find()
-//    if(!users) res.json({message: "users not found"});
-//    res.status(200).json(users);
-//  } catch (error) {
-//   res.status(500).json({message : "Internal server error"})
-//   console.log("Error at getAllUser controller", error)
-//  }
-// }
+
 export const createUser = async (req, res) => {
   try {
     const { pseudo, email, password } = req.body;
@@ -58,8 +48,9 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { email, password, pseudo } = req.body;
-    if (!pseudo) res.status(400).json({ message: "A name is required" });
-    await prisma.user.update({
+    if (!pseudo || !email)
+      res.status(400).json({ message: "Name and email are required" });
+    const user = await prisma.user.update({
       where: {
         id: req.params.id,
       },
@@ -69,7 +60,7 @@ export const updateUser = async (req, res) => {
         pseudo: pseudo,
       },
     });
-    res.status(200).json({ message: "User updated successfully !" });
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
     console.log("Error at update controller", error);

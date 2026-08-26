@@ -3,7 +3,7 @@ import prisma from "../config/prisma.js";
 export async function createGroup(req, res) {
   try {
     const { name, isTemporary, eventId } = req.body;
-    if (!name) res.status(400).json({ message: "Name is required" });
+    if (!name) return res.status(400).json({ message: "Name is required" });
     const group = await prisma.group.create({
       data: {
         name,
@@ -21,7 +21,7 @@ export async function createGroup(req, res) {
 export async function updateGroup(req, res) {
   try {
     const { name, isTemporary, eventId } = req.body;
-    if (!name) res.status(400).json({ message: "Name is required" });
+    if (!name) return res.status(400).json({ message: "Name is required" });
     const group = await prisma.group.update({
       where: {
         id: req.params.id,
@@ -60,10 +60,30 @@ export async function getGroup(req, res) {
         id: req.params.id,
       },
     });
+    if(!group) return res.status(404).json({message: "Group not found"})
     res.status(200).json(group);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
     console.log("Error at getGroup controller ", error);
+  }
+}
+
+export async function getMessagesByGroup(req, res) {
+  try {
+    const { groupId } = req.params;
+
+    const messages = await prisma.message.findMany({
+      where: { groupId },
+      include: {
+        sender: { select: { id: true, pseudo: true } },
+      },
+      orderBy: { createdAt: "asc" },
+    });
+
+    res.status(200).json(messages);
+  } catch (error) {
+    console.log("Error at getMessagesByGroup controller", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
