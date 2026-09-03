@@ -1,44 +1,26 @@
 import prisma from "../config/prisma.js";
 
-export async function updateGroupMember(req, res) {
-  try {
-    const { groupId, userId } = req.body;
-    if (!groupId || userId)
-      return res.status(400).json({ message: "Group and user are required" });
-    const gm = await prisma.groupMember.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        groupId: groupId,
-        userId: userId,
-      },
-    });
-    res.status(200).json(gm);
-  } catch (error) {
-    res.status(500).json({ message: "Internal error" });
-    console.log("Error at updateGroupMember controller: \n", error);
-  }
-}
-
-export async function deleteGroupMember(req, res) {
+export async function leaveGroup(req, res) {
   try {
     await prisma.groupMember.delete({
       where: {
-        id: req.params.id,
+        groupId_userId: { groupId: req.params.groupId, userId: req.user.id },
       },
     });
     res.status(200).json({ message: "GroupMember deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal error" });
-    console.log("Error at deleteGroupMember controller: \n", error);
+    if (error.code === "P2025") {
+      return res.status(404).json({ message: "Not in the group" });
+    }
+    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at leaveGroup controller", error);
   }
 }
 
-export async function createGroupMember(req, res) {
+export async function addMember(req, res) {
   try {
     const { groupId, userId } = req.body;
-    if (!groupId || userId)
+    if (!groupId || !userId)
       return res.status(400).json({ message: "Group and user are required" });
     const gm = await prisma.groupMember.create({
       data: {
@@ -48,32 +30,48 @@ export async function createGroupMember(req, res) {
     });
     res.status(201).json(gm);
   } catch (error) {
-    res.status(500).json({ message: "Internal error" });
-    console.log("Error at createGroupMember controller: \n", error);
+    if (error.code === "P2002") {
+      return res.status(409).json({ message: "Already in the group" });
+    }
+    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at addMember controller", error);
   }
 }
 
-export async function getGroupMember(req, res) {
+export async function removeMember(req, res) {
   try {
-    const gm = await prisma.groupMember.findUnique({
-      where: {
-        id: req.params.id,
-      },
+    await prisma.groupMember.delete({ where: { id: req.params.id } });
+    res.status(200).json({ message: "Membre retiré du groupe" });
+  } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ message: "Ce membre n'est pas dans le groupe" });
+    }
+    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at removeMember controller", error);
+  }
+}
+
+export async function updateMember(req, res) {
+  try {
+    const { role } = req.body;
+
+    if (!["ADMIN", "MEMBER"].includes(role)) {
+      return res.status(400).json({ message: "Rôle invalide" });
+    }
+
+    const member = await prisma.groupMember.update({
+      where: { id: req.params.id },
+      data: { role },
     });
-    if (!gm) return res.status(404).json({ message: "GroupMember not found" });
-    res.status(200).json(gm);
-  } catch (error) {
-    res.status(500).json({ message: "Internal error" });
-    console.log("Error at getGroupMember controller: \n", error);
-  }
-}
 
-export async function getGroupMembers(req, res) {
-  try {
-    const gm = await prisma.groupMember.findMany();
-    res.status(200).json(gm);
+    res.status(200).json(member);
   } catch (error) {
-    res.status(500).json({ message: "Internal error" });
-    console.log("Error at getGroupMembers controller: \n", error);
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({ message: "Ce membre n'est pas dans le groupe" });
+    }
+    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at updateMemberRole controller", error);
   }
 }

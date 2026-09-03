@@ -30,43 +30,25 @@ export const getUser = async (req, res) => {
   }
 };
 
-export const createUser = async (req, res) => {
-  try {
-    const { pseudo, email, password } = req.body;
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password,
-        pseudo,
-      },
-      select: { id: true, email: true, pseudo: true },
-    });
-    if (!pseudo) res.status(400).json({ message: "A name is required" });
-    res.status(201).json(user);
-    console.log("User created successfully !");
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at createUser controller", error);
-  }
-};
 export const updateUser = async (req, res) => {
   try {
-    const { email, password, pseudo } = req.body;
-    if (!pseudo || !email)
+    const id = req.params.id;
+    const { pseudo } = req.body;
+    if (id !== req.user.id) {
+      return res.status(403).json({ message: "Cannot modify another profil" });
+    }
+    if (!pseudo)
       res.status(400).json({ message: "Name and email are required" });
     const user = await prisma.user.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        email,
-        password,
-        pseudo,
-      },
+      where: { id },
+      data: { pseudo },
       select: { id: true, email: true, pseudo: true },
     });
     res.status(200).json(user);
   } catch (error) {
+    if (error.code === "P2025")
+      return res.status(404).json({ message: "User not found" });
+
     res.status(500).json({ message: "Internal server error" });
     console.log("Error at update controller", error);
   }
@@ -74,6 +56,8 @@ export const updateUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
+    if (req.params.id !== req.user.id)
+      return res.status(403).json({ message: "Cannot delete another profil" });
     await prisma.user.delete({
       where: {
         id: req.params.id,
@@ -81,6 +65,9 @@ export const deleteUser = async (req, res) => {
     });
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
+    if (error.code === "P2025") {
+      return res.status(404).json({ message: "User not found" });
+    }
     console.error("Error at deleteUser controllers ", error);
     res.status(500).json({ message: "Internal server error" });
   }

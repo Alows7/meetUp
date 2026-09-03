@@ -12,13 +12,13 @@ export async function protectRoute(req, res, next) {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await prisma.user.findUnique({
-      where: { id: req.params.id },
+      where: { id: decoded.id }, //  vient du token, pas de l'URL
       select: { id: true, email: true, pseudo: true },
     });
     if (!user) return res.status(404).json({ message: "User not found" });
     req.user = user;
-    next()
+    next();
   } catch (error) {
-    return res.status(401).json({message: "Token expired or unavailable"})
+    return res.status(401).json({ message: "Token expired or unavailable" });
   }
 }

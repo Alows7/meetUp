@@ -1,18 +1,23 @@
 import express from "express";
 import {
-  getMessage,
   getMessages,
   updateMessage,
   deleteMessage,
   createMessage,
 } from "../controllers/message.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import { requireOwnership } from "../middleware/owner.middleware.js";
 
 const messageRouter = express.Router();
 
-messageRouter.get("/", getMessages);
-messageRouter.get("/:id", getMessage);
-messageRouter.put("/:id", updateMessage);
-messageRouter.delete("/:id", deleteMessage);
 messageRouter.post("/", createMessage);
+messageRouter.get("/:groupId", protectRoute, getMessages);
+messageRouter.patch(
+  "/:id",
+  requireOwnership("message", "senderId", "message not found"),
+  updateMessage,
+);
+messageRouter.delete("/:id",
+  requireOwnership("message", "senderId", "message not found"), deleteMessage);
 
-export default messageRouter
+export default messageRouter;

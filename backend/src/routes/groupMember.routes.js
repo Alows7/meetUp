@@ -1,18 +1,18 @@
 import express from "express";
 import {
-  getGroupMember,
-  getGroupMembers,
-  createGroupMember,
-  deleteGroupMember,
-  updateGroupMember,
+  addMember,
+  leaveGroup,
+  removeMember,
+  updateMember,
 } from "../controllers/groupMember.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import { requireGroupAdmin } from "../middleware/admin.middleware.js";
 
 const groupMemberRouter = express.Router();
 
-groupMemberRouter.post("/", createGroupMember);
-groupMemberRouter.get("/", getGroupMembers);
-groupMemberRouter.get("/:id", getGroupMember);
-groupMemberRouter.delete("/:id", deleteGroupMember);
-groupMemberRouter.put("/:id", updateGroupMember);
+groupMemberRouter.post("/", protectRoute, requireGroupAdmin, addMember);
+groupMemberRouter.delete("/leave", leaveGroup);
+groupMemberRouter.delete("/remove/:id", requireGroupAdmin, removeMember);
+groupMemberRouter.patch("/:id", requireGroupAdmin, updateMember);
 
 export default groupMemberRouter;

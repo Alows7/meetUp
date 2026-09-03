@@ -2,7 +2,8 @@ import prisma from "../config/prisma.js";
 
 export async function createMessage(req, res) {
   try {
-    const { content, groupId, senderId } = req.body;
+    const { content, groupId } = req.body;
+    const senderId = req.user.id;
     if (!groupId || !content)
       return res.status(400).json({
         message: "groupId and content are required",
@@ -14,6 +15,9 @@ export async function createMessage(req, res) {
         groupId,
         senderId,
       },
+      include: {
+        sender: { id: true, pseudo: true },
+      },
     });
     res.status(201).json(message);
   } catch (error) {
@@ -22,24 +26,16 @@ export async function createMessage(req, res) {
   }
 }
 
-export async function getMessage(req, res) {
-  try {
-    const message = await prisma.message.findUnique({
-      where: {
-        id: req.params.id,
-      },
-    });
-    if (!message) return res.status(404).json({ message: "Message not found" });
-    res.status(200).json(message);
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getMessage controller ", error);
-  }
-}
-
 export async function getMessages(req, res) {
   try {
-    const messages = await prisma.message.findMany();
+    const groupId = req.params.groupId;
+    const messages = await prisma.message.findMany({
+      where: { groupId },
+      include: {
+        sender: { id: true, pseudo: true },
+      },
+      orderBy: { createdAt: "asc" },
+    });
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -49,20 +45,15 @@ export async function getMessages(req, res) {
 
 export async function updateMessage(req, res) {
   try {
-    const { content, groupId, senderId } = req.body;
-    if (!groupId || !content)
+    const { content } = req.body;
+    if (!content)
       return res.status(400).json({
-        message: "groupId and content are required",
+        message: "content is required",
       });
     const updatedMessage = await prisma.message.update({
-      where: {
-        id: req.params.id,
-      },
-      data: {
-        content,
-        groupId,
-        senderId,
-      },
+      where: { id: req.params.id },
+      data: { content },
+      include: { sender: { id: true, pseudo: true } },
     });
     res.status(200).json(updatedMessage);
   } catch (error) {
@@ -74,9 +65,7 @@ export async function updateMessage(req, res) {
 export async function deleteMessage(req, res) {
   try {
     await prisma.message.delete({
-      where: {
-        id: req.params.id,
-      },
+      where: { id: req.params.id },
     });
     res.status(200).json({ message: "message deleted successfully" });
   } catch (error) {

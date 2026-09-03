@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma.js";
-import { jsx } from "react/jsx-runtime";
 
 export async function register(req, res) {
   try {
