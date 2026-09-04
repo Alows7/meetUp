@@ -20,12 +20,8 @@ export async function createFriendship(req, res) {
     });
     res.status(201).json(friendship);
   } catch (error) {
-    if (error.code === "P2002")
-      return res
-        .status(409)
-        .json({ message: "Friendship already sent or exist" });
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at createFriendShip controller ", error);
+    console.log("Error at createFriendShip controller ");
+    next(error);
   }
 }
 
@@ -44,8 +40,8 @@ export async function getFriendship(req, res) {
       return res.status(404).json({ message: "Friendship not found" });
     res.status(200).json(friendship);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getFriendShip controller ", error);
+    console.log("Error at getFriendShip controller ");
+    next(error);
   }
 }
 
@@ -60,8 +56,8 @@ export async function deleteFriendship(req, res) {
       message: "Friendship deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at deleteFriendShip controller ", error);
+    console.log("Error at deleteFriendShip controller ");
+    next(error);
   }
 }
 
@@ -80,10 +76,8 @@ export async function respondToFriendship(req, res) {
     });
     res.status(200).json(friendship);
   } catch (error) {
-    if (error.code === "P2025")
-      return res.status(404).json({ message: "friendship not found" });
-    res.status(500).json({ message: "Internal server erreur" });
-    console.log("Error at respondToFriendship controller : \n", error);
+    console.log("Error at respondToFriendship controller : \n");
+    next(error);
   }
 }
 
@@ -106,8 +100,8 @@ export async function getFriends(req, res) {
     });
     res.status(200).json(friends);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getFriends controller", error);
+    console.log("Error at getFriends controller");
+    next(error);
   }
 }
 
@@ -120,7 +114,7 @@ export async function getPendingRequests(req, res) {
     });
     res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getPendingRequests controller", error);
+    console.log("Error at getPendingRequests controller");
+    next(error);
   }
 }

@@ -5,8 +5,8 @@ export async function getEvents(req, res) {
     const events = await prisma.event.findMany();
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: "Internal server Error" });
-    console.log("Error at getEvents controller ", error);
+    console.log("Error at getEvents controller ");
+    next(error);
   }
 }
 
@@ -40,8 +40,8 @@ export async function getEvent(req, res) {
     }
     res.status(200).json(event);
   } catch (error) {
-    res.status(500).json({ message: "Internal server Error" });
-    console.log("Error at getEvent controller", error);
+    console.log("Error at getEvent controller");
+    next(error);
   }
 }
 
@@ -56,25 +56,43 @@ export async function createEvent(req, res) {
       latitude,
       longitude,
     } = req.body;
-    if (!title) res.status(400).json({ message: "A title is required" });
+    if (!title) return res.status(400).json({ message: "A title is required" });
     const organizerId = req.user.id;
 
-    const event = await prisma.event.create({
-      data: {
-        title,
-        description,
-        date,
-        duration,
-        locationName,
-        organizerId,
-        latitude,
-        longitude,
-      },
+    const event = await prisma.$transaction(async (tx) => {
+      const newEvent = await tx.event.create({
+        data: {
+          title,
+          description,
+          date,
+          organizerId,
+          duration,
+          locationName,
+          latitude,
+          longitude,
+        },
+      });
+      const eventGroup = await tx.group.create({
+        data: {
+          name: newEvent.title + " Group",
+          isTemporary: true,
+          eventId: newEvent.id,
+        },
+      });
+      await tx.groupMember.create({
+        data: {
+          groupId: eventGroup.id,
+          userId: newEvent.organizerId,
+          role: "ADMIN",
+        },
+      });
+      return newEvent;
     });
+
     res.status(201).json(event);
   } catch (error) {
-    res.status(500).json({ message: "Internal server Error" });
-    console.log("Error at createEvent controller ", error);
+    console.log("Error at createEvent controller ");
+    next(error);
   }
 }
 
@@ -87,8 +105,8 @@ export async function deleteEvent(req, res) {
     });
     res.status(200).json({ message: `Event deleted succefully` });
   } catch (error) {
-    res.status(500).json({ message: "Internal server Error" });
-    console.log("Error at deleteEvent controller ", error);
+    console.log("Error at deleteEvent controller ");
+    next(error);
   }
 }
 
@@ -120,8 +138,8 @@ export async function updateEvent(req, res) {
     });
     res.status(200).json(event);
   } catch (error) {
-    res.status(500).json({ message: "Internal server Error" });
-    console.log("Error at updateEvent controller ", error);
+    console.log("Error at updateEvent controller ");
+    next(error);
   }
 }
 
@@ -139,8 +157,8 @@ export async function getAnnouncementsByEvent(req, res) {
     });
     res.status(200).json(announcements);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getAnnouncementsByEvent controller : \n", error);
+    console.log("Error at getAnnouncementsByEvent controller : \n");
+    next(error);
   }
 }
 
@@ -159,8 +177,8 @@ export async function getPublicEvents(req, res) {
 
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
     console.log("Error at getPublicEvents controller", error);
+    next(error);
   }
 }
 
@@ -173,8 +191,8 @@ export async function getMyCreatedEvents(req, res) {
 
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
     console.log("Error at getMyCreatedEvents controller", error);
+    next(error);
   }
 }
 
@@ -200,7 +218,7 @@ export async function getMyInvitedEvents(req, res) {
 
     res.status(200).json(events);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
     console.log("Error at getMyInvitedEvents controller", error);
+    next(error);
   }
 }

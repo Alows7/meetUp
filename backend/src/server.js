@@ -10,6 +10,7 @@ import messageRouter from "./routes/message.routes.js";
 import announcementRouter from "./routes/announcement.routes.js";
 import groupMemberRouter from "./routes/groupMember.routes.js";
 import authRouter from "./routes/auth.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 dotenv.config();
 const port = process.env.PORT || 3000;
@@ -27,6 +28,8 @@ app.use("/api/messages", messageRouter);
 app.use("/api/announcements", announcementRouter);
 app.use("/api/groupMembers", groupMemberRouter);
 app.use("/auth", authRouter);
+
+app.use(errorHandler)
 
 app.listen(port, () => {
   console.log("serveur lancé avec succès");

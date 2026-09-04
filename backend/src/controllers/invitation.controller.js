@@ -13,11 +13,8 @@ export async function createInvitation(req, res) {
     });
     res.status(201).json(invitation);
   } catch (error) {
-    if (error.code === "P2002")
-      return res.status(409).json({ message: "User already invited" });
-
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at createInvitation controller ", error);
+    console.log("Error at createInvitation controller ");
+    next(error);
   }
 }
 
@@ -34,8 +31,8 @@ export async function getInvitation(req, res) {
 
     res.status(200).json(invitation);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getInvitation controller ", error);
+    console.log("Error at getInvitation controller ");
+    next(error);
   }
 }
 
@@ -51,8 +48,8 @@ export async function getMyInvitations(req, res) {
     });
     res.status(200).json(invitations);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getMyInvitations controller ", error);
+    console.log("Error at getMyInvitations controller ");
+    next(error);
   }
 }
 
@@ -60,7 +57,7 @@ export async function respondToInvitation(req, res) {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    if (!(["CONFIRMED", "DECLINED"].includes(status)))
+    if (!["CONFIRMED", "DECLINED"].includes(status))
       return res.status(400).json({ message: "Invalid status" });
 
     const invitation = await prisma.invitation.update({
@@ -70,9 +67,8 @@ export async function respondToInvitation(req, res) {
 
     res.status(200).json(invitation);
   } catch (error) {
-    if(error.code === "P2025") return res.status(404).json({message: "invitation not found"})
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at respondToInvitation controller ", error);
+    console.log("Error at respondToInvitation controller ");
+    next(error);
   }
 }
 
@@ -85,8 +81,8 @@ export async function deleteInvitation(req, res) {
     });
     res.status(200).json({ message: "Invitation deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at deleteInvitation controller ", error);
+    console.log("Error at deleteInvitation controller ");
+    next(error);
   }
 }
 
@@ -111,7 +107,7 @@ export async function getSentInvitationsForEvent(req, res) {
 
     res.status(200).json(invitations);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getSentInvitationsForEvent controller", error);
+    console.log("Error at getSentInvitationsForEvent controller");
+    next(error);
   }
 }

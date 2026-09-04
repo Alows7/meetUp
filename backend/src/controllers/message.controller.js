@@ -21,8 +21,8 @@ export async function createMessage(req, res) {
     });
     res.status(201).json(message);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at createMessage controller ", error);
+    console.log("Error at createMessage controller ");
+    next(error);
   }
 }
 
@@ -38,8 +38,8 @@ export async function getMessages(req, res) {
     });
     res.status(200).json(messages);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getMessages controller ", error);
+    console.log("Error at getMessages controller ");
+    next(error);
   }
 }
 
@@ -57,8 +57,8 @@ export async function updateMessage(req, res) {
     });
     res.status(200).json(updatedMessage);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at updateMessage controller ", error);
+    console.log("Error at updateMessage controller ");
+    next(error);
   }
 }
 
@@ -69,7 +69,7 @@ export async function deleteMessage(req, res) {
     });
     res.status(200).json({ message: "message deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at deleteMessage controller ", error);
+    console.log("Error at deleteMessage controller ");
+    next(error);
   }
 }

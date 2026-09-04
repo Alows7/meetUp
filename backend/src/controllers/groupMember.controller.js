@@ -9,11 +9,8 @@ export async function leaveGroup(req, res) {
     });
     res.status(200).json({ message: "GroupMember deleted successfully" });
   } catch (error) {
-    if (error.code === "P2025") {
-      return res.status(404).json({ message: "Not in the group" });
-    }
-    res.status(500).json({ message: "Internal server error" });
     console.log("Error at leaveGroup controller", error);
+    next(error);
   }
 }
 
@@ -33,8 +30,8 @@ export async function addMember(req, res) {
     if (error.code === "P2002") {
       return res.status(409).json({ message: "Already in the group" });
     }
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at addMember controller", error);
+    console.log("Error at addMember controller");
+    next(error);
   }
 }
 
@@ -43,11 +40,8 @@ export async function removeMember(req, res) {
     await prisma.groupMember.delete({ where: { id: req.params.id } });
     res.status(200).json({ message: "Membre retiré du groupe" });
   } catch (error) {
-    if (error.code === "P2025") {
-      return res.status(404).json({ message: "Ce membre n'est pas dans le groupe" });
-    }
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at removeMember controller", error);
+    console.log("Error at removeMember controller");
+    next(error);
   }
 }
 
@@ -66,12 +60,7 @@ export async function updateMember(req, res) {
 
     res.status(200).json(member);
   } catch (error) {
-    if (error.code === "P2025") {
-      return res
-        .status(404)
-        .json({ message: "Ce membre n'est pas dans le groupe" });
-    }
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at updateMemberRole controller", error);
+    console.log("Error at updateMemberRole controller");
+    next(error);
   }
 }

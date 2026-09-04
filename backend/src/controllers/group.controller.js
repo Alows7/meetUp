@@ -17,8 +17,8 @@ export async function createGroup(req, res) {
     });
     res.status(201).json(group);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at createGroup controller ", error);
+    console.log("Error at createGroup controller ");
+    next(error);
   }
 }
 
@@ -36,8 +36,8 @@ export async function updateGroup(req, res) {
     });
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at updateGroup controller ", error);
+    console.log("Error at updateGroup controller ");
+    next(error);
   }
 }
 
@@ -45,13 +45,13 @@ export async function deleteGroup(req, res) {
   try {
     await prisma.group.delete({
       where: {
-        id: req.params.id
-      }
+        id: req.params.id,
+      },
     });
     res.status(200).json({ message: "group deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at deleteGroup controller ", error);
+    console.log("Error at deleteGroup controller ");
+    next(error);
   }
 }
 
@@ -62,11 +62,11 @@ export async function getGroup(req, res) {
         id: req.params.id,
       },
     });
-    if(!group) return res.status(404).json({message: "Group not found"})
+    if (!group) return res.status(404).json({ message: "Group not found" });
     res.status(200).json(group);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getGroup controller ", error);
+    console.log("Error at getGroup controller ");
+    next(error);
   }
 }
 
@@ -84,8 +84,8 @@ export async function getMessagesByGroup(req, res) {
 
     res.status(200).json(messages);
   } catch (error) {
-    console.log("Error at getMessagesByGroup controller", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.log("Error at getMessagesByGroup controller");
+    next(error);
   }
 }
 
@@ -100,7 +100,7 @@ export async function getMyGroups(req, res) {
 
     res.status(200).json(groups);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getMyGroups controller", error);
+    console.log("Error at getMyGroups controller");
+    next(error);
   }
 }

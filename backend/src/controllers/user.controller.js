@@ -7,10 +7,7 @@ export const getUsers = async (req, res) => {
     });
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({
-      message: "Internal server error",
-    });
-    console.log("Error at getUsers controller", error);
+    console.log("Error at getUsers controller");
   }
 };
 
@@ -25,8 +22,8 @@ export const getUser = async (req, res) => {
     if (!user) return res.status(404).json({ message: "user not found" });
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at getUser controller", error);
+    console.log("Error at getUser controller");
+    next(error);
   }
 };
 
@@ -46,11 +43,8 @@ export const updateUser = async (req, res) => {
     });
     res.status(200).json(user);
   } catch (error) {
-    if (error.code === "P2025")
-      return res.status(404).json({ message: "User not found" });
-
-    res.status(500).json({ message: "Internal server error" });
-    console.log("Error at update controller", error);
+    console.log("Error at update controller");
+    next(error);
   }
 };
 
@@ -65,10 +59,7 @@ export const deleteUser = async (req, res) => {
     });
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    if (error.code === "P2025") {
-      return res.status(404).json({ message: "User not found" });
-    }
-    console.error("Error at deleteUser controllers ", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error at deleteUser controllers ");
+    next(error);
   }
 };
