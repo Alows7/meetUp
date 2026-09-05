@@ -1,0 +1,14 @@
+.app-shell {
+	padding: 40px;
+	font-family: Arial, sans-serif;
+	text-align: center;
+}
+
+.app-shell h1 {
+	margin-bottom: 12px;
+}
+
+.app-shell p {
+	margin: 6px 0;
+	color: #666;
+}
