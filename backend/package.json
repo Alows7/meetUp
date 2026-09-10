@@ -7,12 +7,12 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
+    "google-auth-library": "^11.0.2",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.7.1",
     "nodemon": "^3.1.14",
     "pg": "^8.23.0",
-    "prisma": "^7.9.1",
-    "upstash": "^0.0.1"
+    "prisma": "^6.19.3",
+    "socket.io": "^4.8.3"
   },
   "name": "backend",
   "version": "1.0.0",
