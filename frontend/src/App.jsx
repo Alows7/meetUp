@@ -1,13 +1,17 @@
-import './App.css'
+import Nav from "./components/Navbar";
+import Header from "./components/Header";
+import AppRoutes from "./routes/AppRoutes";
 
-function App() {
+export default function App() {
   return (
-    <main className="app-shell">
-      <h1 className="text-amber-700">Bienvenue sur MeetUp</h1>
-      <p>Organise tes sorties et retrouve tes amis.</p>
-      <p>La suite arrive bientôt.</p>
-    </main>
-  )
+    <div className="flex min-h-screen bg-slate-50 md:gap-4 md:p-4">
+      <Nav />
+      <div className="flex-1">
+        <Header />
+        <main className="p-4 pb-20 ">
+          <AppRoutes />
+        </main>
+      </div>
+    </div>
+  );
 }
-
-export default App
