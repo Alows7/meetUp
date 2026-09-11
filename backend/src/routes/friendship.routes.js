@@ -12,21 +12,19 @@ import { requireOwnership } from "../middleware/owner.middleware.js";
 
 const friendshipRouter = express.Router();
 
-friendshipRouter.get("/friends", protectRoute, getFriends);
-friendshipRouter.get("/:id", protectRoute, getFriendship);
-friendshipRouter.delete("/:id", protectRoute, deleteFriendship);
 friendshipRouter.post(
   "/",
   protectRoute,
-  requireOwnership("friendship", "requesterId", "No friendship found"),
   createFriendship,
 );
 friendshipRouter.get(
-  "/resquest",
+  "/pending",
   protectRoute,
-  requireOwnership("friendship", "addresseeId", "No friendship found"),
   getPendingRequests,
 );
+friendshipRouter.get("/friends", protectRoute, getFriends);
+friendshipRouter.get("/:id", protectRoute, getFriendship);
+friendshipRouter.delete("/:id", protectRoute, deleteFriendship);
 friendshipRouter.patch(
   "/:id",
   protectRoute,

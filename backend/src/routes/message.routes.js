@@ -10,14 +10,19 @@ import { requireOwnership } from "../middleware/owner.middleware.js";
 
 const messageRouter = express.Router();
 
-messageRouter.post("/", createMessage);
+messageRouter.post("/", protectRoute, createMessage);
 messageRouter.get("/:groupId", protectRoute, getMessages);
 messageRouter.patch(
   "/:id",
+  protectRoute,
   requireOwnership("message", "senderId", "message not found"),
   updateMessage,
 );
-messageRouter.delete("/:id",
-  requireOwnership("message", "senderId", "message not found"), deleteMessage);
+messageRouter.delete(
+  "/:id",
+  protectRoute,
+  requireOwnership("message", "senderId", "message not found"),
+  deleteMessage,
+);
 
 export default messageRouter;
