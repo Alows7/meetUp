@@ -13,22 +13,29 @@ import { requireOwnership } from "../middleware/owner.middleware.js";
 const invitationRouter = express.Router();
 
 invitationRouter.post("/", protectRoute, createInvitation);
-invitationRouter.get("/", getMyInvitations);
-invitationRouter.get("/sent", getSentInvitationsForEvent);
+invitationRouter.get("/", protectRoute, getMyInvitations);
+invitationRouter.get(
+  "/:eventId/sent",
+  protectRoute,
+  getSentInvitationsForEvent,
+);
 
 invitationRouter.delete(
   "/:id",
+  protectRoute,
   requireOwnership("invitation", "userId", "Invitation not found"),
   deleteInvitation,
 );
 invitationRouter.get(
   "/:id",
+  protectRoute,
   requireOwnership("invitation", "userId", "Invitation not found"),
   getInvitation,
 );
 
 invitationRouter.patch(
   "/:id",
+  protectRoute,
   requireOwnership("invitation", "userId", "Invitation not found"),
   respondToInvitation,
 );

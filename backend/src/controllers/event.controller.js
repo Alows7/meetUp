@@ -143,24 +143,24 @@ export async function updateEvent(req, res) {
   }
 }
 
-export async function getAnnouncementsByEvent(req, res) {
-  try {
-    const { eventId } = req.params;
-    const announcements = await prisma.announcement.findMany({
-      where: { eventId },
-      include: {
-        select: { id: true, title: true, description: true },
-      },
-      orderBy: {
-        createdAt: "asc",
-      },
-    });
-    res.status(200).json(announcements);
-  } catch (error) {
-    console.log("Error at getAnnouncementsByEvent controller : \n");
-    next(error);
-  }
-}
+// export async function getAnnouncementsByEvent(req, res) {
+//   try {
+//     const { eventId } = req.params;
+//     const announcements = await prisma.announcement.findMany({
+//       where: { eventId },
+//       include: {
+//         select: { id: true, title: true, description: true },
+//       },
+//       orderBy: {
+//         createdAt: "asc",
+//       },
+//     });
+//     res.status(200).json(announcements);
+//   } catch (error) {
+//     console.log("Error at getAnnouncementsByEvent controller : \n");
+//     next(error);
+//   }
+// }
 
 export async function getPublicEvents(req, res) {
   try {

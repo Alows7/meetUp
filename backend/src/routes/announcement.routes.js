@@ -5,15 +5,16 @@ import {
   updateAnnouncement,
   deleteAnnouncement,
   createAnnouncement,
+  getAnnouncementsByEvent,
 } from "../controllers/announcement.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { requireOwnership } from "../middleware/owner.middleware.js";
 
 const announcementRouter = express.Router();
 
+announcementRouter.post("/", protectRoute, createAnnouncement);
 announcementRouter.get("/", protectRoute, getAnnouncements);
 announcementRouter.get("/:id", protectRoute, getAnnouncement);
-announcementRouter.post("/", protectRoute, createAnnouncement);
 announcementRouter.patch(
   "/:id",
   protectRoute,
@@ -26,5 +27,6 @@ announcementRouter.delete(
   requireOwnership("announcement", "authorId", "Announcement not found"),
   deleteAnnouncement,
 );
+announcementRouter.get("/:eventId", protectRoute, getAnnouncementsByEvent)
 
 export default announcementRouter;

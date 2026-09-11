@@ -10,7 +10,7 @@ import announcementRouter from "../routes/announcement.routes.js";
 import groupMemberRouter from "../routes/groupMember.routes.js";
 import authRouter from "../routes/auth.routes.js";
 import { errorHandler } from "../middleware/error.middleware.js";
-import rateLimiter from "../utils/rateLimiter.js"
+import rateLimiter from "../utils/rateLimiter.js";
 
 const app = express();
 

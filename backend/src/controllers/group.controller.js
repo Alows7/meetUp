@@ -70,24 +70,24 @@ export async function getGroup(req, res) {
   }
 }
 
-export async function getMessagesByGroup(req, res) {
-  try {
-    const { groupId } = req.params;
+// export async function getMessagesByGroup(req, res) {
+//   try {
+//     const { groupId } = req.params;
 
-    const messages = await prisma.message.findMany({
-      where: { groupId },
-      include: {
-        sender: { select: { id: true, pseudo: true } },
-      },
-      orderBy: { createdAt: "asc" },
-    });
+//     const messages = await prisma.message.findMany({
+//       where: { groupId },
+//       include: {
+//         sender: { select: { id: true, pseudo: true } },
+//       },
+//       orderBy: { createdAt: "asc" },
+//     });
 
-    res.status(200).json(messages);
-  } catch (error) {
-    console.log("Error at getMessagesByGroup controller");
-    next(error);
-  }
-}
+//     res.status(200).json(messages);
+//   } catch (error) {
+//     console.log("Error at getMessagesByGroup controller");
+//     next(error);
+//   }
+// }
 
 export async function getMyGroups(req, res) {
   try {

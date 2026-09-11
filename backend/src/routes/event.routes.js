@@ -15,38 +15,33 @@ import { requireOwnership } from "../middleware/owner.middleware.js";
 
 const eventRouter = express.Router();
 
+eventRouter.post("/", protectRoute, createEvent);
 eventRouter.get("/", protectRoute, getEvents);
 eventRouter.get("/invited", protectRoute, getMyInvitedEvents);
 eventRouter.get("/public", protectRoute, getPublicEvents);
-eventRouter.get("/:id", protectRoute, getEvent);
-eventRouter.post("/", protectRoute, createEvent);
+eventRouter.get(
+"/created",
+protectRoute,
+getMyCreatedEvents,
+);
 eventRouter.delete(
   "/:id",
   protectRoute,
   requireOwnership("event", "organizerId", "Event not found"),
   deleteEvent,
 );
-eventRouter.get(
-  "/:eventId/announcements",
-  protectRoute,
-  getAnnouncementsByEvent,
-);
+eventRouter.get("/:id", protectRoute, getEvent);
+// eventRouter.get(
+//   "/:eventId/announcements",
+//   protectRoute,
+//   getAnnouncementsByEvent,
+// );
 
-eventRouter.put(
+eventRouter.patch(
   "/:id",
   protectRoute,
   requireOwnership("event", "organizerId", "Event not found"),
   updateEvent,
 );
-eventRouter.get(
-  "/created",
-  protectRoute,
-  requireOwnership("event", "organizerId", "Event not found"),
-  getMyCreatedEvents,
-);
-
-
-
-
 
 export default eventRouter;

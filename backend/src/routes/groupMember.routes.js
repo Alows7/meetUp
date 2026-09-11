@@ -11,8 +11,13 @@ import { requireGroupAdmin } from "../middleware/admin.middleware.js";
 const groupMemberRouter = express.Router();
 
 groupMemberRouter.post("/", protectRoute, requireGroupAdmin, addMember);
-groupMemberRouter.delete("/leave", leaveGroup);
-groupMemberRouter.delete("/remove/:id", requireGroupAdmin, removeMember);
-groupMemberRouter.patch("/:id", requireGroupAdmin, updateMember);
+groupMemberRouter.delete("/leave", protectRoute, leaveGroup);
+groupMemberRouter.delete(
+  "/remove/:id",
+  protectRoute,
+  requireGroupAdmin,
+  removeMember,
+);
+groupMemberRouter.patch("/:id", protectRoute, requireGroupAdmin, updateMember);
 
 export default groupMemberRouter;
