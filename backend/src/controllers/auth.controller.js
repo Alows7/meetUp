@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../config/prisma.js";
+import { OAuth2Client } from "google-auth-library";
 
 export async function register(req, res) {
   try {
@@ -38,7 +39,11 @@ export async function login(req, res) {
       return res
         .status(400)
         .json({ message: "Email and password are required" });
+
+    if (!typeof email !== "string")
+      return res.status(400).json({ message: "Invalid email" });
     const user = await prisma.user.findUnique({ where: { email } });
+
     if (!user)
       return res.status(401).json({ message: "Incorrect email or password" });
 
@@ -59,5 +64,56 @@ export async function login(req, res) {
   } catch (error) {
     console.log("Error at login controller", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+export async function googleAuth(req, res, next) {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ message: "IdToken required" });
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload; // sub = l'id unique Google
+
+    // cherche un compte existant par googleId, sinon par email (fusion de compte)
+    let user = await prisma.user.findUnique({ where: { googleId } });
+
+    if (!user) {
+      user = await prisma.user.findUnique({ where: { email } });
+
+      if (user) {
+        // un compte existait déjà avec cet email (inscrit via mot de passe) → on le relie à Google
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId },
+        });
+      } else {
+        // vraiment nouveau compte
+        user = await prisma.user.create({
+          data: {
+            email,
+            googleId,
+            pseudo: name.replace(/\s/g, "").slice(0, 20), // génère un pseudo de base, à personnaliser plus tard
+          },
+        });
+      }
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(200).json({
+      user: { id: user.id, email: user.email, pseudo: user.pseudo },
+      token,
+    });
+  } catch (error) {
+    next(error);
   }
 }

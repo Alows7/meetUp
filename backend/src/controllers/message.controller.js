@@ -1,4 +1,5 @@
 import prisma from "../config/prisma.js";
+import { getIO } from "../socket/socket.js";
 
 export async function createMessage(req, res) {
   try {
@@ -19,6 +20,8 @@ export async function createMessage(req, res) {
         sender: { id: true, pseudo: true },
       },
     });
+    getIO().to(groupId).emit("newMessage", message);
+    
     res.status(201).json(message);
   } catch (error) {
     console.log("Error at createMessage controller ");
