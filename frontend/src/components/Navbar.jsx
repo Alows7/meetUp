@@ -1,8 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Home, Calendar, MessageCircle, Plus } from "lucide-react";
 
 const links = [
-  { to: "/accueil", label: "Accueil", icon: Home },
+  { to: "/", label: "Accueil", icon: Home },
   { to: "/mes-sorties", label: "Mes sorties", icon: Calendar},
   { to: "/discussions", label: "Discussions", icon: MessageCircle },
 ];
@@ -11,32 +11,32 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop */}
-      <aside className="hidden md:flex md:flex-col w-60 h-[calc(100vh-2rem)] shrink-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <aside className="hidden md:sticky md:top-2 md:flex md:flex-col w-60 h-[calc(100vh-2rem)] shrink-0 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div>
-          <div className="text-xl font-bold text-orange-500 mb-8">meetUp</div>
+          <div className="text-2xl text-orange-500 mb-6 mt-2 font-extrabold " style={{ fontFamily: "var(--font-logo)" }}><span className="text-black ">meet</span><span className="text-3xl underline decoration-2 underline-offset-4">Up</span></div>
           <nav className="flex flex-col gap-2">
             {links.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-3 py-2 rounded-lg transition ${
+                  `flex items-center text-[0.9em] justify-between px-3 py-2 rounded-lg transition ${
                     isActive ? "bg-orange-50 text-orange-600 font-medium" : "text-slate-600 hover:bg-slate-50"
                   }`
                 }
               >
                 <span className="flex items-center gap-2">
-                  <Icon size={18} />
+                  <Icon size={16} />
                   {label}
                 </span>
                 
               </NavLink>
             ))}
           </nav>
-          <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-orange-500 py-2 font-medium text-white hover:bg-orange-600">
-            <Plus size={18} />
+          <Link to="/nouvelle-sortie" className="mt-4 flex w-full text-[0.9em] items-center justify-center gap-2 rounded-lg bg-orange-500 py-2 font-medium text-white hover:bg-orange-600">
+            <Plus size={16} />
             Créer une sortie
-          </button>
+          </Link>
         </div>
         
       </aside>
