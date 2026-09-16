@@ -69,22 +69,6 @@ export async function getAnnouncement(req, res) {
   }
 }
 
-export async function getAnnouncements(req, res) {
-  try {
-    const announcements = await prisma.announcement.findMany({
-      include: {
-        event: {
-          select: { id: true, title: true, date: true, description: true },
-        },
-      },
-    });
-    res.status(200).json(announcements);
-  } catch (error) {
-    console.log("Error at updateAnnouncement controller ");
-    next(error);
-  }
-}
-
 export async function getAnnouncementsByEvent(req, res) {
   try {
     const { eventId } = req.params;

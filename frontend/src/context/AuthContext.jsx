@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState("");
 
-  function LogOut() {
+  function logOut() {
     setUser(null);
   }
 
@@ -34,7 +34,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, LogOut, register,googleAuth }}>
+    <AuthContext.Provider value={{ user, token, login, logOut, register,googleAuth }}>
       {children}
     </AuthContext.Provider>
   );

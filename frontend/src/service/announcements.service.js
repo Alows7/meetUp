@@ -3,9 +3,6 @@ import { apiClient } from "./apiClient.js";
 export const createAnnouncement = (data) =>
   apiClient("/announcements", { method: "POST", body: JSON.stringify(data) });
 
-export const getAnnouncements = () =>
-  apiClient("/announcements", { method: "GET" });
-
 export const getAnnouncement = (id) =>
   apiClient(`/announcements/${id}`, { method: "GET" });
 
