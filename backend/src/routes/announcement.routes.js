@@ -1,7 +1,6 @@
 import express from "express";
 import {
   getAnnouncement,
-  getAnnouncements,
   updateAnnouncement,
   deleteAnnouncement,
   createAnnouncement,
@@ -13,7 +12,7 @@ import { requireOwnership } from "../middleware/owner.middleware.js";
 const announcementRouter = express.Router();
 
 announcementRouter.post("/", protectRoute, createAnnouncement);
-announcementRouter.get("/", protectRoute, getAnnouncements);
+announcementRouter.get("/:eventId", protectRoute, getAnnouncementsByEvent)
 announcementRouter.get("/:id", protectRoute, getAnnouncement);
 announcementRouter.patch(
   "/:id",
@@ -27,6 +26,5 @@ announcementRouter.delete(
   requireOwnership("announcement", "authorId", "Announcement not found"),
   deleteAnnouncement,
 );
-announcementRouter.get("/:eventId", protectRoute, getAnnouncementsByEvent)
 
 export default announcementRouter;

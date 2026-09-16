@@ -8,7 +8,6 @@ import {
   createEvent,
   deleteEvent,
   updateEvent,
-  getAnnouncementsByEvent,
 } from "../controllers/event.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 import { requireOwnership } from "../middleware/owner.middleware.js";
