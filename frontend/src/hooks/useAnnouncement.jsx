@@ -11,7 +11,7 @@ export function useCreateAnnouncement() {
 
   async function create(announcementData) {
     setError(null);
-    setLoading(TransformStreamDefaultController);
+    setLoading(true);
     try {
       const result = await createAnnouncement(announcementData);
       return result;
@@ -38,7 +38,7 @@ export function useGetAnnouncement(id) {
         const result = await getAnnouncement(id);
         setData(result);
       } catch (err) {
-        setError(err);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -63,10 +63,12 @@ export function useGetAnnouncementByEvent(eventId) {
         setData(result);
       } catch (err) {
         setError(err);
+      }finally{
+        setLoading(false)
       }
     }
     get()
   }, [eventId]);
 
-  return [data, error, loading]
+  return {data, error, loading}
 }
