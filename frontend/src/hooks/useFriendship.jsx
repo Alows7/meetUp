@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import {
   createFriendship,
+  deleteFriendship,
+  getFriends,
   getPendingRequests,
   respondToFriendship,
 } from "../service/friendships.service";
@@ -37,7 +39,7 @@ export function useRespondToFriendship() {
       const result = await respondToFriendship(id, status);
       return result;
     } catch (err) {
-      setError(err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -46,25 +48,69 @@ export function useRespondToFriendship() {
   return { respond, error, loading };
 }
 
-
-export function useGetPendingRequests(){
+export function useGetPendingRequests() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [data, setData] = useState([])
+  const [data, setData] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     async function pendingRequest() {
-      setLoading(false)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       try {
-        const result = await getPendingRequests()
-        setData(result)
+        const result = await getPendingRequests();
+        setData(result);
       } catch (err) {
-        setError(err)
-      }finally{
-        setLoading(false)
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
     }
-  },[])
+    pendingRequest();
+  }, []);
+  return { loading, error, data };
+}
+
+export function useGetFriends() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    async function get() {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await getFriends();
+        setData(result);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    get();
+  }, []);
+
+  return {loading, data, error};
+}
+
+export function useDeleteFriend() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function deleteFriend(id) {
+    setError(null);
+    setLoading(true);
+    try {
+      await deleteFriendship(id);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return {error, loading, deleteFriend}
 }
