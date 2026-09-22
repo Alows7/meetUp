@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap');
 
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: light --default;
+}
 
 :root {
   /* Police générale du site */
@@ -8,4 +11,11 @@
 
   /* Police du logo */
   --font-logo: "Syne", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background-color: #f8fafc;
 }
