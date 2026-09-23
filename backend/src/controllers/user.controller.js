@@ -1,15 +1,15 @@
 import prisma from "../config/prisma.js";
 
-export const getUsers = async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      select: { id: true, email: true, pseudo: true },
-    });
-    res.status(200).json(users);
-  } catch (error) {
-    console.log("Error at getUsers controller");
-  }
-};
+// export const getUsers = async (req, res) => {
+//   try {
+//     const users = await prisma.user.findMany({
+//       select: { id: true, email: true, pseudo: true },
+//     });
+//     res.status(200).json(users);
+//   } catch (error) {
+//     console.log("Error at getUsers controller");
+//   }
+// };
 
 export const getUser = async (req, res) => {
   try {
@@ -23,27 +23,6 @@ export const getUser = async (req, res) => {
     res.status(200).json(user);
   } catch (error) {
     console.log("Error at getUser controller");
-    next(error);
-  }
-};
-
-export const updateUser = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const { pseudo } = req.body;
-    if (id !== req.user.id) {
-      return res.status(403).json({ message: "Cannot modify another profil" });
-    }
-    if (!pseudo)
-      res.status(400).json({ message: "Name and email are required" });
-    const user = await prisma.user.update({
-      where: { id },
-      data: { pseudo },
-      select: { id: true, email: true, pseudo: true },
-    });
-    res.status(200).json(user);
-  } catch (error) {
-    console.log("Error at update controller");
     next(error);
   }
 };

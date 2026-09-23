@@ -25,7 +25,7 @@ app.use("/api/groups", groupRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/announcements", announcementRouter);
 app.use("/api/groupMembers", groupMemberRouter);
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api", rateLimiter);
 
 app.use(errorHandler);
