@@ -7,24 +7,28 @@ import NouvelleSortie from "../pages/NouvelleSortie";
 import DetailSortie from "../pages/DetailSortie";
 
 import Notifications from "../pages/Notifications";
-import Connexion from "../pages/auth/Connexion";
-import Inscription from "../pages/auth/Inscription";
 import Profil from "../pages/Profil";
 import InformationsCompte from "../pages/InformationsCompte";
-
+import LoginPage from "../pages/LoginPage";
+import { useAuth } from "../hooks/UseAuth";
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = sessionStorage.getItem("meetup-auth") === "true";
-
-  return isAuthenticated ? children : <Navigate to="/connexion" replace />;
+  const { user, loading } = useAuth(); 
+  if (loading) return <p>Chargement...</p>; 
+  return user ? children : <Navigate to="/connexion" replace />;
 }
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/connexion" element={<Connexion />} />
-      <Route path="/inscription" element={<Inscription />} />
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Accueil />} />
         <Route path="/accueil" element={<Accueil />} />
         <Route path="/mes-sorties" element={<MesSorties />} />

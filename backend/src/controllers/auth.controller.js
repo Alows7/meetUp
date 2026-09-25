@@ -40,8 +40,6 @@ export async function login(req, res) {
         .status(400)
         .json({ message: "Email and password are required" });
 
-    if (!typeof email !== "string")
-      return res.status(400).json({ message: "Invalid email" });
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user)
@@ -116,4 +114,8 @@ export async function googleAuth(req, res, next) {
   } catch (error) {
     next(error);
   }
+}
+
+export async function loginGoogle(req, res, next) {
+  
 }
