@@ -115,3 +115,7 @@ export async function googleAuth(req, res, next) {
     next(error);
   }
 }
+
+export async function loginGoogle(req, res, next) {
+  
+}

@@ -2,9 +2,9 @@ import { useState } from "react";
 import AuthTabs from "../components/AuthTabs";
 import FormInput from "../components/FormInput";
 import PasswordField from "../components/PasswordField";
-import GoogleButton from "../components/GoogleButton";
 import { useAuth } from "../hooks/UseAuth";
 import { useNavigate } from "react-router-dom";
+import GoogleAuthButton from "../components/GoogleButton";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -26,7 +26,8 @@ const LoginPage = () => {
       } else {
         await register({ email, password, pseudo });
       }
-      navigate("/")
+      console.log("connected");
+      navigate("/accueil");
     } catch (error) {
       setError(error.message);
     } finally {
@@ -146,13 +147,7 @@ const LoginPage = () => {
             </button>
           </form>
 
-          <GoogleButton
-            label={
-              mode === "register"
-                ? "S'inscrire avec Google"
-                : "Continuer avec Google"
-            }
-          />
+          <GoogleAuthButton />
         </div>
       </section>
     </div>

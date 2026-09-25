@@ -10,19 +10,25 @@ import Notifications from "../pages/Notifications";
 import Profil from "../pages/Profil";
 import InformationsCompte from "../pages/InformationsCompte";
 import LoginPage from "../pages/LoginPage";
-
+import { useAuth } from "../hooks/UseAuth";
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = sessionStorage.getItem("meetup-auth") === "true";
-
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  const { user, loading } = useAuth(); 
+  if (loading) return <p>Chargement...</p>; 
+  return user ? children : <Navigate to="/connexion" replace />;
 }
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
-      <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+      <Route
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/" element={<Accueil />} />
         <Route path="/accueil" element={<Accueil />} />
         <Route path="/mes-sorties" element={<MesSorties />} />

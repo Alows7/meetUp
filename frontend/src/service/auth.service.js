@@ -9,5 +9,8 @@ export const login = (email, password) =>
 export const register = (data) =>
   apiClient("/auth/register", { method: "POST", body: JSON.stringify(data) });
 
-export const googleAuth = (data) =>
-  apiClient("/auth/google", { method: "POST", body: JSON.stringify(data) });
+export const googleAuth = (idToken) =>
+  apiClient("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ idToken })
+  });

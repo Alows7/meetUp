@@ -1,15 +1,28 @@
-import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../hooks/UseAuth";
+import { useNavigate } from "react-router-dom";
 
-const GoogleButton = ({ label }) => {
+function GoogleAuthButton() {
+  const { googleAuth } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleSuccess(credentialResponse) {
+    try {
+      await googleAuth(credentialResponse.credential);
+
+      console.log("connection réussi");
+      navigate("/accueil");
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+
   return (
-    <button
-      type="button"
-      className="w-full cursor-pointer py-3 rounded-xl border border-gray-300 bg-white flex items-center justify-center gap-2.5 font-bold text-sm text-ink mt-3"
-    >
-      <FcGoogle size={18} />
-      {label}
-    </button>
+    <GoogleLogin
+      onSuccess={handleSuccess}
+      onError={() => console.log("Échec de connexion Google")}
+    />
   );
-};
+}
 
-export default GoogleButton
+export default GoogleAuthButton;
